@@ -76,6 +76,7 @@
 **Диаграмма компонентов (Components)**
 
 [Диаграмма компонентов Сервис управления устройствами](/Schemas/Schema3ComponentDeviceManagment.puml)
+
 [Диаграмма компонентов Сервис управления пользователями](/Schemas/Schema3ComponentUser.puml)
 
 
@@ -105,7 +106,9 @@
 ### 2. Документация API
 
 [YAML файл для Swagger на регистрацию устройства](/docs/openapi.yaml)
+
 [Приложение для автогенерации документации Swagger](app.py) Можно запустить через "python app.py"
+
 [Сгенерированный Swagger на регистрацию устройства](/docs/Swagger.html)
 
 
