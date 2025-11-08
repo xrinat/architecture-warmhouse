@@ -1,0 +1,70 @@
+1. Пользователь (User)
+Атрибут	Тип	Описание
+User_ID	UUID	Уникальный идентификатор пользователя
+Email	String	Электронная почта (логин)
+PasswordHash	String	Хэш пароля
+FullName	String	Полное имя
+Phone	String	Телефон
+Role	Enum («Пользователь», «Администратор»)	Роль пользователя
+CreatedDt	DateTime	Дата регистрации
+Status	Enum («Активен», «Заблокирован»)	Состояние учётной записи
+2. Дом (House)
+Атрибут	Тип	Описание
+House_ID	UUID	Уникальный идентификатор дома
+User_ID	UUID	Владелец дома (внешний ключ на User)
+Address	String	Адрес
+Name	String	Название дома («Дом в деревне»)
+CreatedDt	DateTime	Дата добавления
+Status	Enum («Активен», «Отключён»)	Статус подключения
+3. Тип устройства (DeviceType)
+Атрибут	Тип	Описание
+DeviceType_ID	UUID	Уникальный идентификатор типа
+Name	String	Название типа («Термостат», «Камера», «Реле ворот»)
+Protocol	String	Протокол взаимодействия (MQTT, Zigbee, HTTP и др.)
+Description	String	Краткое описание функционала устройства
+4. Устройство (Device)
+Атрибут	Тип	Описание
+Device_ID	UUID	Уникальный идентификатор устройства
+DeviceType_ID	UUID	Внешний ключ на тип устройства
+House_ID	UUID	Внешний ключ на дом
+SerialNumber	String	Серийный номер
+Name	String	Название устройства («Термостат спальни»)
+Status	Enum («Включено», «Выключено», «Ошибка», «Оффлайн»)	Текущее состояние
+Device_LastUpdated	DateTime	Время последнего обновления статуса
+5. Телеметрия (TelemetryData)
+Атрибут	Тип	Описание
+Telemetry_ID	UUID	Уникальный идентификатор записи
+Device_ID	UUID	Устройство, с которого получены данные
+Timestamp	DateTime	Время измерения
+MetricType	String	Тип метрики (температура, влажность и т.д.)
+Value	Float	Значение
+Unit	String	Единица измерения
+RawData	JSON	Необработанные данные телеметрии (при необходимости)
+6. Команда (Command)
+Атрибут	Тип	Описание
+Command_ID	UUID	Уникальный идентификатор команды
+Device_ID	UUID	Целевое устройство
+CommandType	String	Тип команды («on», «off», «set_temp»)
+Payload	JSON	Параметры команды
+Status	Enum («Ожидает», «Выполнена», «Ошибка»)	Статус выполнения
+CreatedDt	DateTime	Дата создания команды
+ExecutedAt	DateTime	Дата исполнения
+7. Регистрация устройства (DeviceRegistration)
+Атрибут	Тип	Описание
+Registration_ID	UUID	Уникальный идентификатор регистрации
+Device_ID	UUID	Подключаемое устройство
+AuthKey	String	Ключ авторизации устройства
+Protocol	String	Протокол подключения (MQTT, HTTP и т.п.)
+Status	Enum («Ожидает», «Активировано», «Ошибка»)	Статус подключения
+RegisteredAt	DateTime	Время регистрации
+ActivatedAt	DateTime	Время активации
+8. Журнал событий (EventLog)
+Атрибут	Тип	Описание
+EventLog_ID	UUID	Уникальный идентификатор события
+User_ID	UUID	Пользователь, к которому относится событие
+SourceType	Enum («Устройство», «Система», «Команда»)	Источник события
+Source_ID	UUID	Идентификатор источника
+EventType	String	Тип события («Ошибка», «Изменение состояния», «Подключение устройства» и т.п.)
+Payload	JSON	Детали события
+Timestamp	DateTime	Время регистрации события
+IsRead	Boolean	Признак прочтения уведомления пользователем

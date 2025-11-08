@@ -57,8 +57,8 @@ func (h *SensorHandler) GetSensors(c *gin.Context) {
 			if err == nil {
 				// Update sensor with real-time data
 				sensors[i].Value = tempData.Value
-				sensors[i].Status = tempData.Status
-				sensors[i].LastUpdated = tempData.Timestamp
+				//sensors[i].Status = tempData.Status
+				//sensors[i].LastUpdated = tempData.Timestamp
 				log.Printf("Updated temperature data for sensor %d from external API", sensor.ID)
 			} else {
 				log.Printf("Failed to fetch temperature data for sensor %d: %v", sensor.ID, err)

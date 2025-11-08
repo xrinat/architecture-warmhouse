@@ -1,0 +1,74 @@
+openapi: 3.0.3
+info:
+  title: API модуля регистрации устройств
+  description: |
+    REST API и события RabbitMQ для регистрации IoT-устройств в экосистеме «Тёплый дом».  
+    После успешной регистрации устройство публикует событие `device.registered` в RabbitMQ Exchange `device.events`.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+    description: Локальный сервер разработки
+
+paths:
+  /api/devices/register:
+    post:
+      summary: Регистрация нового устройства
+      description: Регистрирует устройство в системе и публикует событие RabbitMQ.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterDeviceRequest'
+      responses:
+        '202':
+          description: Устройство принято на регистрацию
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterDeviceResponse'
+        '400':
+          description: Некорректные данные
+        '401':
+          description: Неверный AuthKey
+        '409':
+          description: Устройство уже зарегистрировано
+
+components:
+  schemas:
+    RegisterDeviceRequest:
+      type: object
+      properties:
+        deviceId:
+          type: string
+          format: uuid
+          example: "8e76c7e8-1c67-4a62-a4a1-9f024d9cbe67"
+        authKey:
+          type: string
+          example: "ABC12345XYZ"
+        serialNumber:
+          type: string
+          example: "SN-001-2025"
+      required:
+        - deviceId
+        - authKey
+        - serialNumber
+
+    RegisterDeviceResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: accepted
+        registrationId:
+          type: string
+          format: uuid
+          example: "5b53f1b3-26d8-4e3c-93a5-c781b83a5f23"
+        deviceId:
+          type: string
+          format: uuid
+          example: "8e76c7e8-1c67-4a62-a4a1-9f024d9cbe67"
+        createdDt:
+          type: string
+          format: date-time
+          example: "2025-11-08T10:12:30Z"

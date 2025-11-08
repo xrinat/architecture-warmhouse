@@ -1,0 +1,101 @@
+@startuml
+!define TABLE(name,desc) class name as "desc" << (T,#FFAAAA) >>
+
+hide circle
+hide methods
+hide stereotypes
+
+' Пользователь
+TABLE(User, "Пользователь") {
+  +User_ID : UUID
+  Email : String
+  PasswordHash : String
+  FullName : String
+  Phone : String
+  Role : Enum(Пользователь, Администратор)
+  CreatedDt : DateTime
+  Status : Enum(Активен, Заблокирован)
+}
+
+' Дом
+TABLE(House, "Дом") {
+  +House_ID : UUID
+  User_ID : UUID
+  Address : String
+  Name : String
+  CreatedDt : DateTime
+  Status : Enum(Активен, Отключён)
+}
+
+' Тип устройства
+TABLE(DeviceType, "Тип устройства") {
+  +DeviceType_ID : UUID
+  Name : String
+  Protocol : String
+  Description : String
+}
+
+' Устройство
+TABLE(Device, "Устройство") {
+  +Device_ID : UUID
+  DeviceType_ID : UUID
+  House_ID : UUID
+  SerialNumber : String
+  Name : String
+  Status : Enum(Включено, Выключено, Ошибка, Оффлайн)
+  LastUpdated : DateTime
+}
+
+' Телеметрия
+TABLE(TelemetryData, "Телеметрия") {
+  +Telemetry_ID : UUID
+  Device_ID : UUID
+  Timestamp : DateTime
+  MetricType : String
+  Value : Float
+  Unit : String
+  RawData : JSON
+}
+
+' Команда
+TABLE(Command, "Команда") {
+  +Command_ID : UUID
+  Device_ID : UUID
+  CommandType : String
+  Payload : JSON
+  Status : Enum(Ожидает, Выполнена, Ошибка)
+  CreatedDt : DateTime
+  ExecDt : DateTime
+}
+
+' Регистрация устройства
+TABLE(DeviceRegistration, "Регистрация устройства") {
+  +Registration_ID : UUID
+  Device_ID : UUID
+  AuthKey : String
+  Status : Enum(Ожидает, Активировано, Ошибка)
+  CreatedDt : DateTime
+}
+
+' Журнал событий
+TABLE(EventLog, "Журнал событий") {
+  +EventLog_ID : UUID
+  User_ID : UUID
+  SourceType : Enum(Устройство, Система, Команда)
+  Source_ID : UUID
+  EventType : String
+  Payload : JSON
+  Timestamp : DateTime
+}
+
+' ==== СВЯЗИ ====
+
+User "1" -- "N" House : владеет >
+House "1" -- "N" Device : содержит >
+DeviceType "1" -- "N" Device : определяет >
+Device "1" -- "N" TelemetryData : генерирует >
+Device "1" -- "N" Command : получает >
+Device "1" -- "1" DeviceRegistration : проходит >
+User "1" -- "N" EventLog : имеет >
+
+@enduml

@@ -68,7 +68,7 @@ func (s *TemperatureService) GetTemperatureByID(sensorID string) (*TemperatureRe
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
+		return nil, fmt.Errorf("unexpected status code: %d Url:%s", resp.StatusCode, url)
 	}
 
 	var temperatureResp TemperatureResponse

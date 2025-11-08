@@ -1,0 +1,71 @@
+@startuml
+title Диаграмма кода — Модуль регистрации устройств
+
+' ==== Классы ====
+
+class Device {
+    - Device_ID : UUID
+    - DeviceType_ID : UUID
+    - House_ID : UUID
+    - SerialNumber : String
+    - Name : String
+    - Status : Enum
+    - LastUpdated : DateTime
+    + getStatus() : Enum
+    + setStatus(status : Enum)
+}
+
+class DeviceRegistration {
+    - Registration_ID : UUID
+    - Device_ID : UUID
+    - AuthKey : String
+    - Status : Enum
+    - CreatedDt : DateTime
+    + activate()
+    + deactivate()
+    + isActive() : Boolean
+}
+
+class DeviceRepository {
+    + findById(deviceId : UUID) : Device
+    + save(device : Device)
+    + exists(deviceId : UUID) : Boolean
+}
+
+class RegistrationRepository {
+    + findByDeviceId(deviceId : UUID) : DeviceRegistration
+    + save(registration : DeviceRegistration)
+    + updateStatus(registrationId : UUID, status : Enum)
+}
+
+class AuthValidator {
+    + validateKey(authKey : String) : Boolean
+}
+
+class EventPublisher {
+    + publishDeviceRegistered(deviceId : UUID)
+}
+
+class RegistrationService {
+    + registerDevice(deviceId : UUID, authKey : String) : DeviceRegistration
+    + activateDevice(deviceId : UUID)
+    + deactivateDevice(deviceId : UUID)
+}
+
+class DeviceRegistrationController {
+    + register(request : RegistrationRequest)
+    + activate(request : ActivationRequest)
+    + deactivate(request : DeactivationRequest)
+}
+
+' ==== Связи между классами ====
+
+DeviceRegistrationController --> RegistrationService : использует
+RegistrationService --> DeviceRepository : проверяет устройство
+RegistrationService --> RegistrationRepository : создает / обновляет регистрацию
+RegistrationService --> AuthValidator : проверяет AuthKey
+RegistrationService --> EventPublisher : публикует событие DeviceRegistered
+DeviceRepository --> Device : управляет данными устройства
+RegistrationRepository --> DeviceRegistration : управляет данными регистрации
+
+@enduml
