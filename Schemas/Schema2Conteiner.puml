@@ -1,0 +1,56 @@
+@startuml
+!define C4P https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master
+!includeurl C4P/C4_Container.puml
+
+Person(user, "Пользователь", "Использует Web или мобильное приложение для управления домом и устройствами")
+
+System_Boundary(system, "Экосистема «Умный дом»") {
+
+    Container(webApp, "Web/Mobile клиент + API-шлюз", "React / Flutter + Backend", "Интерфейс пользователя и маршрутизация запросов к микросервисам")
+    
+    Container(userService, "Сервис пользователей и домов", "Go / Python / Node.js", "Управление пользователями, домами, ролями") 
+    ContainerDb(userDb, "База данных пользователей", "PostgreSQL", "Хранение информации о пользователях и домах")
+    
+    Container(deviceService, "Сервис управления устройствами", "Go / Node.js", "Регистрация, подключение и настройка устройств")
+    ContainerDb(deviceDb, "База данных устройств", "PostgreSQL", "Состояние и конфигурация устройств")
+    
+    Container(telemetryService, "Сервис телеметрии", "Go / Python", "Сбор и хранение данных с устройств")
+    ContainerDb(telemetryDb, "База данных телеметрии", "TimescaleDB / InfluxDB", "Хранение временных рядов датчиков")
+    
+    Container(commandService, "Сервис команд", "Go / Node.js", "Низкоуровневое управление устройствами")
+    
+    Container(automationService, "Сервис сценариев", "Go / Python", "Обработка пользовательских сценариев и автоматизация")
+    
+    Container(integrationService, "Сервис интеграции с устройствами партнёров", "Go / Node.js", "Поддержка сторонних устройств")
+    
+    Container(messageBroker, "Брокер сообщений", "RabbitMQ", "Асинхронная передача событий между сервисами")
+}
+
+' Взаимодействия пользователя
+Rel(user, webApp, "Взаимодействует с системой через Web/Mobile клиент")
+
+' Web/Mobile -> сервисы
+Rel(webApp, userService, "Запросы управления аккаунтом и домами")
+Rel(webApp, deviceService, "Регистрация и управление устройствами")
+Rel(webApp, commandService, "Отправка команд")
+Rel(webApp, telemetryService, "Просмотр телеметрии")
+Rel(webApp, automationService, "Настройка сценариев")
+Rel(webApp, integrationService, "Доступ к устройствам партнеров")
+
+' Сервисы -> базы данных
+Rel(userService, userDb, "Чтение/запись данных пользователей")
+Rel(deviceService, deviceDb, "Чтение/запись данных устройств")
+Rel(telemetryService, telemetryDb, "Запись телеметрии и чтение исторических данных")
+
+' Взаимодействия между сервисами через брокер сообщений
+Rel(deviceService, messageBroker, "Отправка событий об изменениях состояния устройств")
+Rel(commandService, messageBroker, "Отправка команд на устройства и события выполнения")
+Rel(automationService, messageBroker, "Подписка на события и отправка команд по сценариям")
+Rel(telemetryService, messageBroker, "Публикация событий телеметрии для сценариев и команд")
+
+' Прямое взаимодействие
+Rel(commandService, deviceService, "Отправка команд на конкретные устройства")
+Rel(automationService, commandService, "Команды согласно сценариям")
+Rel(deviceService, integrationService, "Подключение и синхронизация сторонних устройств")
+
+@enduml

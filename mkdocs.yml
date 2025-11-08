@@ -1,0 +1,13 @@
+site_name: Пол
+theme: readthedocs
+markdown_extensions:
+  - md_in_html
+  - plantuml_markdown
+plugins:
+  - search 
+  - plantuml:
+        puml_url: https://www.plantuml.com/plantuml/ 
+        render: plantuml-server
+        server: https://www.plantuml.com/plantuml  # публичный сервер
+        diagram_root: docs/diagrams
+        output_format: svg        

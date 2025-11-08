@@ -1,0 +1,36 @@
+@startuml
+!define C4P https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master
+!includeurl C4P/C4_Context.puml
+
+Person(user, "Пользователь", "Взаимодействует с экосистемой через Web/Mobile клиент")
+
+System_Boundary(system, "Экосистема «Умный дом»") {
+
+    System(webApp, "Пользовательский интерфейс / API-шлюз", "Web и мобильное приложение, единственная точка входа для пользователя")
+    System(userService, "Сервис пользователей и домов", "Управление пользователями, домами и ролями")
+    System(deviceService, "Сервис управления устройствами", "Регистрация и управление устройствами")
+    System(telemetryService, "Сервис телеметрии", "Сбор и предоставление телеметрии от устройств")
+    System(commandService, "Сервис команд", "Низкоуровневое управление устройствами")
+    System(automationService, "Сервис сценариев", "Пользовательские сценарии и автоматизация")
+    System(integrationService, "Сервис интеграции с устройствами партнёров", "Поддержка сторонних устройств")
+}
+
+' Взаимодействия пользователя
+Rel(user, webApp, "Использует Web/Mobile клиент для управления домом и устройствами")
+
+' Взаимодействия Web/Mobile с сервисами
+Rel(webApp, userService, "Управление аккаунтом и домами")
+Rel(webApp, deviceService, "Регистрация и управление устройствами")
+Rel(webApp, commandService, "Отправка команд на устройства")
+Rel(webApp, telemetryService, "Просмотр телеметрии")
+Rel(webApp, automationService, "Создание и редактирование сценариев")
+Rel(webApp, integrationService, "Доступ к устройствам партнеров")
+
+' Взаимодействия между сервисами
+Rel(deviceService, telemetryService, "Отправка телеметрии")
+Rel(commandService, deviceService, "Команды на устройства")
+Rel(automationService, telemetryService, "Использует данные телеметрии для сценариев")
+Rel(automationService, commandService, "Отправка команд согласно сценариям")
+Rel(deviceService, integrationService, "Поддержка сторонних устройств")
+
+@enduml

@@ -1,0 +1,26 @@
+@startuml
+title Диаграмма контекста текущей системы "Тёплый дом"
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+Person(User, "User", "Управление отоплением\n(через мобильное приложение)")
+'actor "Пользователь" as User
+
+Person(Installer, "Специалист по подключению")
+
+System_Boundary(System, "Приложение Тёплый дом ") {
+
+    rectangle "Управление отоплением" as Heating
+    rectangle "Устройства" as Devices
+    rectangle "Пользователи и дома" as Users
+    rectangle "Установка и подключение" as Installation
+    'database "PostgreSQL\n(хранение данных)" as DB
+}
+'User --> Users : Привязка домов и прав доступа
+
+Rel(User, Heating, "Управление отоплением\n(через веб/мобильное приложение")
+Rel(Installer, Installation, "Подключение нового дома")
+Rel(Installation, Devices, "Подключение нового устройства")
+Rel(Installation, Users, "Внесение информации о доме")
+Heating <-> Devices: "Передача данных"
+
+
+@enduml

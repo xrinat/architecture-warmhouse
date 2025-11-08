@@ -1,0 +1,38 @@
+@startuml
+!define C4P https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master
+!includeurl C4P/C4_Component.puml
+
+Container_Boundary(deviceService, "Сервис управления устройствами") {
+
+    Component(apiController, "Контроллер API", "Go REST", "Обрабатывает запросы от пользовательского интерфейса и других сервисов")
+    Component(deviceRegistry, "Реестр устройств", "Go модуль", "Регистрирует и управляет списком устройств")
+    Component(deviceProvisioning, "Подключение устройств", "Go модуль", "Отвечает за первичную настройку и подключение новых устройств")
+    Component(deviceStateManager, "Менеджер состояния устройств", "Go модуль", "Отслеживает текущее состояние и статусы устройств")
+    Component(integrationAdapter, "Адаптер интеграции", "Go модуль", "Взаимодействует с сервисом интеграции партнёрских устройств")
+    Component(eventPublisher, "Публикатор событий", "RabbitMQ", "Отправляет события об изменениях состояния устройств")
+    Component(deviceRepository, "Репозиторий устройств", "ORM / SQL", "Обеспечивает доступ к данным об устройствах в БД")
+}
+
+' Внешние элементы
+ContainerDb(deviceDb, "База данных устройств", "PostgreSQL", "Хранение информации об устройствах и их конфигурациях")
+Container(commandService, "Сервис команд", "Отправляет низкоуровневые команды на устройства")
+Container(telemetryService, "Сервис телеметрии", "Получает и хранит телеметрию от устройств")
+Container(integrationService, "Сервис интеграции", "Обеспечивает работу с устройствами партнёров")
+Container(messageBroker, "Брокер сообщений", "RabbitMQ", "Передаёт события между сервисами")
+
+' Взаимодействия внутри сервиса
+Rel(apiController, deviceRegistry, "Запросы на регистрацию и получение устройств")
+Rel(apiController, deviceProvisioning, "Подключение новых устройств")
+Rel(deviceRegistry, deviceRepository, "Сохраняет и извлекает данные об устройствах")
+Rel(deviceStateManager, deviceRepository, "Обновляет и читает статусы устройств")
+Rel(deviceProvisioning, integrationAdapter, "Использует адаптер для взаимодействия с партнёрскими устройствами")
+Rel(deviceStateManager, eventPublisher, "Публикует события об изменениях состояния устройств")
+
+' Взаимодействия с внешними системами
+Rel(apiController, commandService, "Передаёт данные для отправки команд на устройства")
+Rel(deviceStateManager, telemetryService, "Передаёт метаданные для телеметрии")
+Rel(integrationAdapter, integrationService, "Обменивается данными и протоколами")
+Rel(eventPublisher, messageBroker, "Отправляет события в брокер сообщений")
+Rel(deviceRepository, deviceDb, "Чтение и запись данных об устройствах")
+
+@enduml
